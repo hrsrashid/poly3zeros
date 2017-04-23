@@ -1,0 +1,9 @@
+.vscode
+slatec
+slatec4linux
+*.mod
+*.o
+main
+*_fun*
+*TestRunner*
+.DS_Store
