@@ -1,13 +1,13 @@
 module poly3zerosModule
   implicit none
-  public :: poly3zeros, eq
+  public :: poly3zeros, zroot3, eq
+  real :: PI = 3.14159265359
+  real :: EPS = 1e-3
 
 contains
-
   function poly3zeros(a, b, c, d)
     implicit none
 
-    real :: PI = 3.14159265359
     complex, dimension(3) :: poly3zeros
     complex :: a, b, c, d, p, q, qu, alpha, beta, phi, psi
 
@@ -44,18 +44,58 @@ contains
     end if
   end function
 
+  function zroot3(x)
+    complex, dimension(3) :: zroot3
+    complex :: x
+    real :: radius, theta
+
+    if (x == cmplx(0)) then
+      zroot3(1) = cmplx(0)
+      zroot3(2) = cmplx(0)
+      zroot3(3) = cmplx(0)
+      return
+    end if
+
+    if (real(x) == 0) then
+      if (aimag(x) > 0) then
+        theta = PI/2
+      else
+        theta = 3./2 * PI
+      end if
+    else if (aimag(x) == 0) then
+      if (real(x) > 0) then
+        theta = 0
+      else
+        theta = PI
+      end if
+    else
+      if (real(x) > 0) then
+        theta = atan(aimag(x) / real(x))
+      else
+        theta = PI + atan(aimag(x) / real(x))
+      end if
+    end if
+
+    radius = abs(x)**(1./3)
+    theta = theta / 3
+
+    zroot3(1) = radius * cmplx(cos(theta),             sin(theta))
+    zroot3(2) = radius * cmplx(cos(theta + 2./3 * PI), sin(theta + 2./3 * PI))
+    zroot3(3) = radius * cmplx(cos(theta + 4./3 * PI), sin(theta + 4./3 * PI))
+  end function
+
   function eq(a, b)
     implicit none
     LOGICAL :: eq
     complex, dimension(3) :: a, b
     integer :: i, j
     integer, dimension(3) :: used
-    
+
     used = (/0, 0, 0/)
     
     do i = 1, 3, 1
       do j = 1, 3, 1
-        if (used(j) == 0 .AND. a(i) == b(j)) then
+        if (used(j) == 0 .AND. abs(a(i) - b(j)) < EPS) then
           used(j) = 1
           exit
         end if
