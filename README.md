@@ -1,4 +1,4 @@
-# Poly3zeros
+# Poly3zeros [![Build Status](https://travis-ci.org/hrsrashid/poly3zeros.svg?branch=master)](https://travis-ci.org/hrsrashid/poly3zeros)
 root finding of cubic polynomical with complex coefficients by Cardano's method
 
 ## Launch
