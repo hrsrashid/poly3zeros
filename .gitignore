@@ -1,6 +1,4 @@
 .vscode
-slatec
-slatec4linux
 *.mod
 *.o
 main

@@ -3,45 +3,50 @@ module poly3zerosModule
   public :: poly3zeros, zroot3, eq
   real :: PI = 3.14159265359
   real :: EPS = 1e-3
+  real :: DELTA = 1e-5
 
 contains
-  function poly3zeros(a, b, c, d)
+  function poly3zeros(d, a1, b1, c1)
     implicit none
 
-    complex, dimension(3) :: poly3zeros
-    complex :: a, b, c, d, p, q, qu, alpha, beta, phi, psi
+    complex, dimension(3) :: poly3zeros, As, Bs
+    complex :: a, b, c, a1, b1, c1, d, p, q, qu, z, alpha
+    real :: AA, BB
+    integer :: i
 
-    p = (3*a*c - b**2) / (3*(a**2))
-    q = (2*(b**3) - 9*a*b*c + 27*(a**2)*d) / (27*(a**3))
+    a = a1 / d
+    b = b1 / d
+    c = c1 / d
+
+    p = -a*a/3 + b
+    q = 2*((a/3)**3) - a*b/3 + c
 
     qu = (p/3)**3 + (q/2)**2
 
-    if ( real(qu) < 0 ) then
-      psi = sqrt(-qu) / (-q/2)
+    As = zroot3(-q/2 + sqrt(qu))
+    Bs = zroot3(-q/2 - sqrt(qu))
 
-      if ( real(q) < 0 ) then
-        phi = atan(psi)
-      else if ( real(q)  > 0 ) then
-        phi = atan(psi) + PI
-      else 
-        phi = PI/2
+    do i = 1, 3, 1
+      AA = real(As(i))
+      BB = real(Bs(i))
+      z = AA*BB + p/3
+
+      if (real(z) < DELTA .AND. aimag(z) < DELTA) then
+        exit
       end if
+    end do
 
-      poly3zeros(1) = 2 * sqrt(-p/3) * cos(phi/3) - b/(3*a)
-      poly3zeros(2) = 2 * sqrt(-p/3) * cos(phi/3 + 2*PI/3) - b/(3*a)
-      poly3zeros(3) = 2 * sqrt(-p/3) * cos(phi/3 + 4*PI/3) - b/(3*a)
-    else if ( real(qu) > 0 ) then
-      alpha = (-q/2 + sqrt(qu))**(1./3)
-      beta = (-q/2 - sqrt(qu))**(1./3)
-
-      poly3zeros(1) = alpha + beta - b/(3*a)
-      poly3zeros(2) = cmplx(-1./2 * real(alpha + beta),  sqrt(.3)/2 * real(alpha - beta)) - b/(3*a)
-      poly3zeros(3) = cmplx(-1./2 * real(alpha + beta), -sqrt(.3)/2 * real(alpha - beta)) - b/(3*a)
+    if (real(qu) < 0 .and. aimag(qu) < DELTA) then
+      alpha = acos(-q/(2 * sqrt(-(p/3)**3))) / 3
+      poly3zeros(1) =  2 * sqrt(-p/3) * cos(alpha) - a/3
+      poly3zeros(2) = -2 * sqrt(-p/3) * cos(alpha + PI/3) - a/3
+      poly3zeros(3) = -2 * sqrt(-p/3) * cos(alpha - PI/3) - a/3
     else
-      poly3zeros(1) = 2 * (-q/2)**(1./3) - b/(3*a)
-      poly3zeros(2) =   - (-q/2)**(1./3) - b/(3*a)
-      poly3zeros(3) =                    - b/(3*a)
+      poly3zeros(1) = AA + BB - a/3
+      poly3zeros(2) = cmplx(-(AA + BB)/2,  (AA - BB)/2 * sqrt(3.)) - a/3
+      poly3zeros(3) = cmplx(-(AA + BB)/2, -(AA - BB)/2 * sqrt(3.)) - a/3
     end if
+    
   end function
 
   function zroot3(x)
