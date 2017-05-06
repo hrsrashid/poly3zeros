@@ -1,0 +1,19 @@
+language: ruby
+
+cache:
+  - apt
+  - bundle
+
+addons:
+  apt:
+    packages:
+      - clang
+      - make
+      - gfortran
+
+install:
+  - gem install funit
+  - export FC="gfortran"
+
+script:
+  - make test
