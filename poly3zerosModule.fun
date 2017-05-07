@@ -101,4 +101,11 @@ test rang3root
   assert_true(eq(roots,correct))
 end test
 
+test realAndCmplxRoots
+  complex, dimension(3) :: roots, correct
+  correct = (/cmplx(1), cmplx(0, 1), cmplx(0, -1)/)
+  roots = poly3zeros(cmplx(1), cmplx(-1), cmplx(1), cmplx(-1))
+  assert_true(eq(roots,correct))
+end test
+
 end test_suite
